@@ -38,6 +38,9 @@ var keygenCmd = &cobra.Command{
 		defer skf.Close()
 		defer pkf.Close()
 
+		skf.Truncate(0)
+		pkf.Truncate(0)
+
 		_, err = skf.WriteString(ske)
 		if err != nil {
 			log.Fatalf("Failed to write secret key: %v", err)

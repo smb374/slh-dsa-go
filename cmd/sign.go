@@ -38,6 +38,8 @@ var signCmd = &cobra.Command{
 		}
 		defer sigf.Close()
 
+		sigf.Truncate(0)
+
 		ske, err := io.ReadAll(skf)
 		if err != nil {
 			log.Fatalf("Failed to read secret key file: %v", err)
