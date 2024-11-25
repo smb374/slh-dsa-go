@@ -16,13 +16,13 @@ var keygenCmd = &cobra.Command{
 	Use:   "keygen",
 	Short: "Generate keys for SLH-DSA",
 	Run: func(cmd *cobra.Command, args []string) {
+		encoder := base64.StdEncoding
 		ctx, err := Variant2Ctx(Variant)
 		if err != nil {
 			log.Fatal(err)
 		}
-		encoder := base64.StdEncoding
 
-		sk, pk, err := SLHKeygen(&ctx)
+		sk, pk, err := keygen(&ctx)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -30,8 +30,8 @@ var keygenCmd = &cobra.Command{
 		ske := encoder.EncodeToString(sk)
 		pke := encoder.EncodeToString(pk)
 
-		skf, err := os.OpenFile(fmt.Sprintf("%s/slh_dsa_key", Output), os.O_WRONLY|os.O_CREATE, 0600)
-		pkf, err := os.OpenFile(fmt.Sprintf("%s/slh_dsa_key.pub", Output), os.O_WRONLY|os.O_CREATE, 0644)
+		skf, err := os.OpenFile(fmt.Sprintf("%s/slh_dsa_key", KeyOutputDir), os.O_WRONLY|os.O_CREATE, 0600)
+		pkf, err := os.OpenFile(fmt.Sprintf("%s/slh_dsa_key.pub", KeyOutputDir), os.O_WRONLY|os.O_CREATE, 0644)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -46,18 +46,18 @@ var keygenCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("Failed to write public key: %v", err)
 		}
-		log.Println("Key generation done.")
+		fmt.Println("Key generation done.")
 	},
 }
-var Output string
+var KeyOutputDir string
 
 func init() {
 	rootCmd.AddCommand(keygenCmd)
 
-	keygenCmd.Flags().StringVarP(&Output, "out", "o", ".", "Directory to output keys.")
+	keygenCmd.Flags().StringVarP(&KeyOutputDir, "out", "o", ".", "Directory to output keys.")
 }
 
-func SLHKeygen(ctx *ctx.Ctx) (sk []byte, pk []byte, err error) {
+func keygen(ctx *ctx.Ctx) (sk []byte, pk []byte, err error) {
 	sk_seed := make([]byte, ctx.Params.N)
 	sk_prf := make([]byte, ctx.Params.N)
 	pk_seed := make([]byte, ctx.Params.N)

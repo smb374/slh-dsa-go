@@ -18,12 +18,12 @@ var Variant string = "SHAKE-128f"
 var rootCmd = &cobra.Command{
 	Use:   "slh-dsa-go",
 	Short: "FIPS 205 SLH-DSA implementation in Go",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long: `FIPS 205 SLH-DSA implementation in Go.
+	Currently supports the following variants:
+	- SHAKE-128[sf]
+	- SHAKE-192[sf]
+	- SHAKE-256[sf]
+	`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
@@ -47,7 +47,7 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().StringVarP(&Variant, "variant", "V", "SHAKE-128f", "Variant to use.")
+	rootCmd.Flags().StringVarP(&Variant, "variant", "v", "SHAKE-128f", "Variant to use.")
 }
 
 func Variant2Ctx(variant string) (ctx ctx.Ctx, err error) {
