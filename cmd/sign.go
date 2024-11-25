@@ -48,7 +48,7 @@ var signCmd = &cobra.Command{
 			log.Fatalf("Failed to decode secret key: %v", err)
 		}
 
-		sig, err := sign(&ctx, []byte(SignMessage), []byte(Context), sk)
+		sig, err := sign(&ctx, []byte(SignMessage), []byte(SignContext), sk)
 		if err != nil {
 			log.Fatalf("Failed to sign message: %v", err)
 		}
@@ -63,7 +63,7 @@ var signCmd = &cobra.Command{
 }
 var SecretKeyPath string
 var SignMessage string
-var Context string
+var SignContext string
 var SigOutputPath string
 
 func init() {
@@ -82,7 +82,7 @@ func init() {
 		"",
 		"Message to sign.")
 	signCmd.Flags().StringVarP(
-		&Context,
+		&SignContext,
 		"context",
 		"c",
 		"deadbeef",

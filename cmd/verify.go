@@ -47,13 +47,15 @@ var verifyCmd = &cobra.Command{
 			log.Fatalf("Failed to decode contents: %v", err)
 		}
 
-		result := verify(&ctx, []byte(SignMessage), sig, []byte(Context), pk)
+		result := verify(&ctx, []byte(VerifyMessage), sig, []byte(VerifyContext), pk)
 		fmt.Printf("Verification result: %v\n", result)
 	},
 }
 
 var SigInputPath string
 var PubKeyPath string
+var VerifyMessage string
+var VerifyContext string
 
 func init() {
 	rootCmd.AddCommand(verifyCmd)
@@ -73,13 +75,13 @@ func init() {
 		"Signature of message.",
 	)
 	verifyCmd.Flags().StringVarP(
-		&SignMessage,
+		&VerifyMessage,
 		"message",
 		"m",
 		"",
 		"Message to sign.")
 	verifyCmd.Flags().StringVarP(
-		&Context,
+		&VerifyContext,
 		"context",
 		"c",
 		"deadbeef",
