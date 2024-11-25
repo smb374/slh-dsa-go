@@ -26,6 +26,17 @@ type SigGenTestCase struct {
 	Signature     string `json:"signature"`
 }
 
+type SigVerTestCase struct {
+	Passed        bool   `json:"testPassed"`
+	SK            string `json:"sk"`
+	PK            string `json:"pk"`
+	AddRnd        string `json:"additionalRandomness"`
+	MessageLength int    `json:"messageLength"`
+	Message       string `json:"message"`
+	Signature     string `json:"signature"`
+	Reason        string `json:"reason"`
+}
+
 func TestKeyGen128F(t *testing.T) {
 	var test_cases []KeyGenTestCase
 	ctx := params.SLH_DSA_128_FAST()
@@ -115,6 +126,50 @@ func TestSigGen128F(t *testing.T) {
 		t.Logf("Case %d: Test SIG_HT", i)
 		if !bytes.Equal(sig_ht, signature_ht) {
 			t.Fatalf("Failed on case %d: FORS chunk not matched", i)
+		}
+	}
+}
+
+func TestSigVer128F(t *testing.T) {
+	var test_cases []SigVerTestCase
+	ctx := params.SLH_DSA_128_FAST()
+
+	input, err := os.Open("./test_inputs/SHAKE128F_sigver.json")
+	if err != nil {
+		t.Fatalf("Failed to open test input: %v", err)
+	}
+	defer input.Close()
+
+	val, err := io.ReadAll(input)
+	err = json.Unmarshal(val, &test_cases)
+	if err != nil {
+		t.Fatalf("Failed to read test input: %v", err)
+	}
+
+	for i, tc := range test_cases {
+		sk, err := hex.DecodeString(tc.SK)
+		pk, err := hex.DecodeString(tc.PK)
+		addrnd, err := hex.DecodeString(tc.AddRnd)
+		msg, err := hex.DecodeString(tc.Message)
+		sig, err := hex.DecodeString(tc.Signature)
+
+		if err != nil {
+			t.Fatalf("Failed to decode test case: %v", err)
+		}
+
+		_, sk_prf, _, _ := ctx.SkSplit(sk)
+
+		Rgen := ctx.PRFmsg(sk_prf, addrnd, msg)
+
+		// Not fatal on cases where R is modified and tc.Passed == false.
+		if !bytes.Equal(Rgen, sig[:ctx.Params.N]) && tc.Passed {
+			t.Fatalf("Failed on case %d: randomness unmatched.", i)
+		}
+
+		res := SLHVerifyInternal(&ctx, msg, sig, pk)
+
+		if res != tc.Passed {
+			t.Fatalf("Failed on case %d: verification result should be %v", i, tc.Passed)
 		}
 	}
 }

@@ -29,10 +29,7 @@ func SLHKeyGenInternal(ctx *ctx.Ctx, sk_seed []byte, sk_prf []byte, pk_seed []by
 // SLH SIG = randomness R || SIG_FORS || SIG_HT
 func SLHSignInternal(ctx *ctx.Ctx, M []byte, sk []byte, addrnd []byte) []byte {
 	var adrs address.Address
-	sk_seed := sk[0:ctx.Params.N]
-	sk_prf := sk[ctx.Params.N : 2*ctx.Params.N]
-	pk_seed := sk[2*ctx.Params.N : 3*ctx.Params.N]
-	pk_root := sk[3*ctx.Params.N : 4*ctx.Params.N]
+	sk_seed, sk_prf, pk_seed, pk_root := ctx.SkSplit(sk)
 	KAdiv8 := utils.DivCeil(ctx.Params.K*ctx.Params.A, 8)                     // ceil(ka / 8)
 	HsubHdivDdiv8 := utils.DivCeil(ctx.Params.H-ctx.Params.H/ctx.Params.D, 8) // ceil((h - h/d) / 8)
 	Hdiv8D := utils.DivCeil(ctx.Params.H, 8*ctx.Params.D)                     // ceil(h / 8d)
@@ -72,16 +69,15 @@ func SLHSignInternal(ctx *ctx.Ctx, M []byte, sk []byte, addrnd []byte) []byte {
 
 func SLHVerifyInternal(ctx *ctx.Ctx, M []byte, sig []byte, pk []byte) bool {
 	var adrs address.Address
-	// size := 2*ctx.Params.N + 3
-	pk_seed := pk[:ctx.Params.N]
-	pk_root := pk[ctx.Params.N:]
+	size := 2*ctx.Params.N + 3
+	pk_seed, pk_root := ctx.PkSplit(pk)
 	KAdiv8 := utils.DivCeil(ctx.Params.K*ctx.Params.A, 8)                     // ceil(ka / 8)
 	HsubHdivDdiv8 := utils.DivCeil(ctx.Params.H-ctx.Params.H/ctx.Params.D, 8) // ceil((h - h/d) / 8)
 	Hdiv8D := utils.DivCeil(ctx.Params.H, 8*ctx.Params.D)                     // ceil(h / 8d)
 
-	// if len(sig) != (1+ctx.Params.K*(1+ctx.Params.A)+ctx.Params.H+ctx.Params.D*size)*ctx.Params.N {
-	// 	return false
-	// }
+	if len(sig) != (1+ctx.Params.K*(1+ctx.Params.A)+ctx.Params.H+ctx.Params.D*size)*ctx.Params.N {
+		return false
+	}
 
 	copy(adrs[:], utils.ToByte(0, 32))
 

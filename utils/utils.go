@@ -1,6 +1,8 @@
 package utils
 
-import "golang.org/x/exp/constraints"
+import (
+	"golang.org/x/exp/constraints"
+)
 
 const (
 	W    = 16

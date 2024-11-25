@@ -124,3 +124,16 @@ func (ctx *Ctx) Tl(pk_seed []byte, adrs *address.Address, ml [][]byte) []byte {
 	io.ReadFull(hash, result)
 	return result
 }
+
+func (ctx *Ctx) PkSplit(pk []byte) (pk_seed []byte, pk_root []byte) {
+	pk_seed = pk[:ctx.Params.N]
+	pk_root = pk[ctx.Params.N:]
+	return
+}
+
+func (ctx *Ctx) SkSplit(sk []byte) (sk_seed []byte, sk_prf []byte, pk_seed []byte, pk_root []byte) {
+	sk_seed = sk[:ctx.Params.N]
+	sk_prf = sk[ctx.Params.N : 2*ctx.Params.N]
+	pk_seed, pk_root = ctx.PkSplit(sk[2*ctx.Params.N:])
+	return
+}
