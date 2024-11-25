@@ -3,9 +3,9 @@ package wots
 import (
 	"bytes"
 
-	"codeberg.org/smb374/slh-dsa-go/address"
-	"codeberg.org/smb374/slh-dsa-go/ctx"
-	"codeberg.org/smb374/slh-dsa-go/utils"
+	"github.com/smb374/slh-dsa-go/address"
+	"github.com/smb374/slh-dsa-go/ctx"
+	"github.com/smb374/slh-dsa-go/utils"
 )
 
 // NOTE: len = 2n + 3, w = 16

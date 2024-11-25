@@ -8,7 +8,7 @@ import (
 	"os"
 	"testing"
 
-	"codeberg.org/smb374/slh-dsa-go/params"
+	"github.com/smb374/slh-dsa-go/params"
 )
 
 type KeyGenTestCase struct {

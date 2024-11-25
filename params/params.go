@@ -1,6 +1,6 @@
 package params
 
-import "codeberg.org/smb374/slh-dsa-go/ctx"
+import "github.com/smb374/slh-dsa-go/ctx"
 
 func SLH_DSA_128_SMALL() ctx.Ctx {
 	return ctx.Ctx{

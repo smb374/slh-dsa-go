@@ -1,6 +1,6 @@
 package address
 
-import "codeberg.org/smb374/slh-dsa-go/utils"
+import "github.com/smb374/slh-dsa-go/utils"
 
 type AddressType = int
 

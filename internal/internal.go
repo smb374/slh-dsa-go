@@ -1,11 +1,11 @@
 package internal
 
 import (
-	"codeberg.org/smb374/slh-dsa-go/address"
-	"codeberg.org/smb374/slh-dsa-go/ctx"
-	"codeberg.org/smb374/slh-dsa-go/fors"
-	"codeberg.org/smb374/slh-dsa-go/utils"
-	"codeberg.org/smb374/slh-dsa-go/xmss"
+	"github.com/smb374/slh-dsa-go/address"
+	"github.com/smb374/slh-dsa-go/ctx"
+	"github.com/smb374/slh-dsa-go/fors"
+	"github.com/smb374/slh-dsa-go/utils"
+	"github.com/smb374/slh-dsa-go/xmss"
 )
 
 func SLHKeyGenInternal(ctx *ctx.Ctx, sk_seed []byte, sk_prf []byte, pk_seed []byte) (sk []byte, pk []byte) {

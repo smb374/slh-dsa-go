@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"io"
 
-	"codeberg.org/smb374/slh-dsa-go/address"
+	"github.com/smb374/slh-dsa-go/address"
 	"golang.org/x/crypto/sha3"
 )
 

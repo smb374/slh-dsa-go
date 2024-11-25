@@ -5,9 +5,9 @@ import (
 	"crypto/rand"
 	"fmt"
 
-	"codeberg.org/smb374/slh-dsa-go/ctx"
-	"codeberg.org/smb374/slh-dsa-go/internal"
-	"codeberg.org/smb374/slh-dsa-go/utils"
+	"github.com/smb374/slh-dsa-go/ctx"
+	"github.com/smb374/slh-dsa-go/internal"
+	"github.com/smb374/slh-dsa-go/utils"
 )
 
 func SLHKeygen(ctx *ctx.Ctx) (sk []byte, pk []byte, err error) {

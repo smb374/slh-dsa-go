@@ -5,8 +5,8 @@ import (
 	"crypto/rand"
 	"testing"
 
-	"codeberg.org/smb374/slh-dsa-go/address"
-	"codeberg.org/smb374/slh-dsa-go/params"
+	"github.com/smb374/slh-dsa-go/address"
+	"github.com/smb374/slh-dsa-go/params"
 )
 
 func TestWots128f(t *testing.T) {

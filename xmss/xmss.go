@@ -3,10 +3,10 @@ package xmss
 import (
 	"bytes"
 
-	"codeberg.org/smb374/slh-dsa-go/address"
-	"codeberg.org/smb374/slh-dsa-go/ctx"
-	"codeberg.org/smb374/slh-dsa-go/utils"
-	"codeberg.org/smb374/slh-dsa-go/wots"
+	"github.com/smb374/slh-dsa-go/address"
+	"github.com/smb374/slh-dsa-go/ctx"
+	"github.com/smb374/slh-dsa-go/utils"
+	"github.com/smb374/slh-dsa-go/wots"
 )
 
 func XmssNode(ctx *ctx.Ctx, sk_seed []byte, i int, z int, pk_seed []byte, adrs *address.Address) []byte {

@@ -1,4 +1,4 @@
-module codeberg.org/smb374/slh-dsa-go
+module github.com/smb374/slh-dsa-go
 
 go 1.22.1
 
