@@ -1,105 +1,83 @@
 package main
 
-import "codeberg.org/smb374/slh-dsa-go/ctx"
+import (
+	"bytes"
+	"crypto/rand"
+	"fmt"
+	"log"
 
-func SLH_DSA_128_SIMPLE() ctx.Ctx {
-	return ctx.Ctx{
-		Params: ctx.ParameterSet{
-			N:        16,
-			H:        63,
-			D:        7,
-			HPrime:   9,
-			A:        12,
-			K:        14,
-			M:        30,
-			Category: ctx.CATEGORY_1,
-			PKBytes:  32,
-			SigBytes: 7856,
-		},
+	"codeberg.org/smb374/slh-dsa-go/ctx"
+	"codeberg.org/smb374/slh-dsa-go/internal"
+	"codeberg.org/smb374/slh-dsa-go/params"
+	"codeberg.org/smb374/slh-dsa-go/utils"
+)
+
+func SLHKeygen(ctx *ctx.Ctx) (sk []byte, pk []byte, err error) {
+	sk_seed := make([]byte, ctx.Params.N)
+	sk_prf := make([]byte, ctx.Params.N)
+	pk_seed := make([]byte, ctx.Params.N)
+
+	_, err = rand.Read(sk_seed)
+	_, err = rand.Read(sk_prf)
+	_, err = rand.Read(pk_seed)
+	if err != nil {
+		return
 	}
+
+	sk, pk = internal.SLHKeyGenInternal(ctx, sk_seed, sk_prf, pk_seed)
+	return
 }
 
-func SLH_DSA_128_FAST() ctx.Ctx {
-	return ctx.Ctx{
-		Params: ctx.ParameterSet{
-			N:        16,
-			H:        66,
-			D:        22,
-			HPrime:   3,
-			A:        6,
-			K:        33,
-			M:        34,
-			Category: ctx.CATEGORY_1,
-			PKBytes:  32,
-			SigBytes: 17088,
-		},
+func SLHSign(ctx *ctx.Ctx, M []byte, context []byte, sk []byte) (sig []byte, err error) {
+	if len(context) > 255 {
+		err = fmt.Errorf("Context string is too long.")
+		return
 	}
+
+	addrnd := make([]byte, ctx.Params.N)
+	_, err = rand.Read(addrnd)
+	if err != nil {
+		return
+	}
+	msg := bytes.Join([][]byte{
+		utils.ToByte(0, 1),
+		utils.ToByte(len(context), 1),
+		context,
+		M,
+	}, nil)
+	sig = internal.SLHSignInternal(ctx, msg, sk, addrnd)
+	return
 }
 
-func SLH_DSA_192_SIMPLE() ctx.Ctx {
-	return ctx.Ctx{
-		Params: ctx.ParameterSet{
-			N:        24,
-			H:        63,
-			D:        7,
-			HPrime:   9,
-			A:        14,
-			K:        17,
-			M:        39,
-			Category: ctx.CATEGORY_3,
-			PKBytes:  48,
-			SigBytes: 16224,
-		},
+func SLHVerify(ctx *ctx.Ctx, M []byte, sig []byte, context []byte, pk []byte) bool {
+	if len(context) > 255 {
+		return false
 	}
+	msg := bytes.Join([][]byte{
+		utils.ToByte(0, 1),
+		utils.ToByte(len(context), 1),
+		context,
+		M,
+	}, nil)
+	return internal.SLHVerifyInternal(ctx, msg, sig, pk)
 }
 
-func SLH_DSA_192_FAST() ctx.Ctx {
-	return ctx.Ctx{
-		Params: ctx.ParameterSet{
-			N:        24,
-			H:        66,
-			D:        22,
-			HPrime:   3,
-			A:        8,
-			K:        33,
-			M:        42,
-			Category: ctx.CATEGORY_3,
-			PKBytes:  48,
-			SigBytes: 35664,
-		},
+func main() {
+	msg := "ZZZZZZZ"
+	context := "Xzzzzzzzz"
+	ctx := params.SLH_DSA_128_SMALL()
+	sk, pk, err := SLHKeygen(&ctx)
+	if err != nil {
+		log.Fatalf("Failed to generate key: %v", err)
 	}
-}
+	sig, err := SLHSign(&ctx, []byte(msg), []byte(context), sk)
+	if err != nil {
+		log.Fatalf("Failed to sign message: %v", err)
+	}
+	ok := SLHVerify(&ctx, []byte(msg), sig, []byte(context), pk)
 
-func SLH_DSA_256_SIMPLE() ctx.Ctx {
-	return ctx.Ctx{
-		Params: ctx.ParameterSet{
-			N:        32,
-			H:        64,
-			D:        8,
-			HPrime:   8,
-			A:        14,
-			K:        22,
-			M:        47,
-			Category: ctx.CATEGORY_5,
-			PKBytes:  64,
-			SigBytes: 29792,
-		},
-	}
-}
-
-func SLH_DSA_256_FAST() ctx.Ctx {
-	return ctx.Ctx{
-		Params: ctx.ParameterSet{
-			N:        32,
-			H:        68,
-			D:        17,
-			HPrime:   4,
-			A:        9,
-			K:        35,
-			M:        49,
-			Category: ctx.CATEGORY_5,
-			PKBytes:  64,
-			SigBytes: 49856,
-		},
-	}
+	fmt.Printf("message       = %s\n", msg)
+	fmt.Printf("context       = %s\n", context)
+	fmt.Printf("Sign & verfiy = %v\n", ok)
+	fmt.Printf("sig length    = %v\n", len(sig))
 }

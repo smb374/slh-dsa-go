@@ -2,7 +2,7 @@ package address
 
 import "codeberg.org/smb374/slh-dsa-go/utils"
 
-type AddressType = uint32
+type AddressType = int
 
 const (
 	WOTS_HASH  AddressType = 0
@@ -17,53 +17,53 @@ const (
 type Address = [32]byte
 
 // Member functions
-func SetLayerAddress(adrs Address, laddr uint32) {
-	result := utils.ToByte(uint(laddr), 4)
-	copy(adrs[0:4], result[0:4])
+func SetLayerAddress(adrs *Address, laddr int) {
+	result := utils.ToByte(laddr, 4)
+	copy(adrs[:4], result[:])
 }
 
 // tree address: 12-byte unsigned integer
-func SetTreeAddress(adrs Address, taddr uint) {
+func SetTreeAddress(adrs *Address, taddr int) {
 	result := utils.ToByte(taddr, 12)
-	copy(adrs[4:16], result[0:12])
+	copy(adrs[4:16], result[:])
 }
 
-func SetTypeAndClear(adrs Address, Y AddressType) {
-	result := utils.ToByte(uint(Y), 4)
-	zeroes := [12]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-	copy(adrs[16:20], result[0:4])
+func SetTypeAndClear(adrs *Address, Y AddressType) {
+	result := utils.ToByte(Y, 4)
+	zeroes := utils.ToByte(0, 12)
+	copy(adrs[16:20], result[:])
 	copy(adrs[20:], zeroes[:])
 }
 
-func SetKeyPairAddress(adrs Address, iaddr uint32) {
-	result := utils.ToByte(uint(iaddr), 4)
-	copy(adrs[20:24], result[0:4])
+func SetKeyPairAddress(adrs *Address, iaddr int) {
+	result := utils.ToByte(iaddr, 4)
+	copy(adrs[20:24], result[:])
 }
 
-func SetChainAddress(adrs Address, iaddr uint32) {
-	result := utils.ToByte(uint(iaddr), 4)
-	copy(adrs[24:28], result[0:4])
+func SetChainAddress(adrs *Address, iaddr int) {
+	result := utils.ToByte(iaddr, 4)
+	copy(adrs[24:28], result[:])
 }
 
-func SetTreeHeight(adrs Address, iaddr uint32) {
-	result := utils.ToByte(uint(iaddr), 4)
-	copy(adrs[24:28], result[0:4])
+func SetTreeHeight(adrs *Address, iaddr int) {
+	result := utils.ToByte(iaddr, 4)
+	copy(adrs[24:28], result[:])
 }
 
-func SetHashAddress(adrs Address, iaddr uint32) {
-	result := utils.ToByte(uint(iaddr), 4)
-	copy(adrs[28:32], result[0:4])
+func SetHashAddress(adrs *Address, iaddr int) {
+	result := utils.ToByte(iaddr, 4)
+	copy(adrs[28:], result[:])
 }
 
-func SetTreeIndex(adrs Address, iaddr uint32) {
-	result := utils.ToByte(uint(iaddr), 4)
-	copy(adrs[28:32], result[0:4])
+func SetTreeIndex(adrs *Address, iaddr int) {
+	result := utils.ToByte(iaddr, 4)
+	copy(adrs[28:], result[:])
 }
 
-func GetKeyPairAddress(adrs Address) uint32 {
-	return uint32(utils.ToInt(adrs[20:24], 4))
+func GetKeyPairAddress(adrs *Address) int {
+	return utils.ToInt(adrs[20:24], 4)
 }
 
-func GetTreeIndex(adrs Address) uint32 {
-	return uint32(utils.ToInt(adrs[24:28], 4))
+func GetTreeIndex(adrs *Address) int {
+	return utils.ToInt(adrs[28:], 4)
 }

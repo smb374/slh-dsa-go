@@ -1,6 +1,7 @@
 package ctx
 
 import (
+	"bytes"
 	"io"
 
 	"codeberg.org/smb374/slh-dsa-go/address"
@@ -32,7 +33,7 @@ type Ctx struct {
 	Params ParameterSet
 }
 
-func (ctx *Ctx) Hmsg(r []byte, pk_seed []byte, pk_root []byte, msg []byte) []byte {
+func (ctx *Ctx) Hmsg(r []byte, pk_seed []byte, pk_root []byte, M []byte) []byte {
 	hash := sha3.NewShake256()
 
 	data := make([]byte, 0)
@@ -41,14 +42,14 @@ func (ctx *Ctx) Hmsg(r []byte, pk_seed []byte, pk_root []byte, msg []byte) []byt
 	data = append(data, r...)
 	data = append(data, pk_seed...)
 	data = append(data, pk_root...)
-	data = append(data, msg...)
+	data = append(data, M...)
 
 	hash.Write(data)
 	io.ReadFull(hash, result)
 	return result
 }
 
-func (ctx *Ctx) PRF(pk_seed []byte, sk_seed []byte, adrs address.Address) []byte {
+func (ctx *Ctx) PRF(pk_seed []byte, sk_seed []byte, adrs *address.Address) []byte {
 	hash := sha3.NewShake256()
 
 	data := make([]byte, 0)
@@ -63,7 +64,7 @@ func (ctx *Ctx) PRF(pk_seed []byte, sk_seed []byte, adrs address.Address) []byte
 	return result
 }
 
-func (ctx *Ctx) PRFmsg(sk_prf []byte, opt_rand []byte, msg []byte) []byte {
+func (ctx *Ctx) PRFmsg(sk_prf []byte, opt_rand []byte, M []byte) []byte {
 	hash := sha3.NewShake256()
 
 	data := make([]byte, 0)
@@ -71,14 +72,14 @@ func (ctx *Ctx) PRFmsg(sk_prf []byte, opt_rand []byte, msg []byte) []byte {
 
 	data = append(data, sk_prf...)
 	data = append(data, opt_rand...)
-	data = append(data, msg...)
+	data = append(data, M...)
 
 	hash.Write(data)
 	io.ReadFull(hash, result)
 	return result
 }
 
-func (ctx *Ctx) F(pk_seed []byte, adrs address.Address, m1 []byte) []byte {
+func (ctx *Ctx) F(pk_seed []byte, adrs *address.Address, m1 []byte) []byte {
 	hash := sha3.NewShake256()
 
 	data := make([]byte, 0)
@@ -93,7 +94,7 @@ func (ctx *Ctx) F(pk_seed []byte, adrs address.Address, m1 []byte) []byte {
 	return result
 }
 
-func (ctx *Ctx) H(pk_seed []byte, adrs address.Address, m2 [2][]byte) []byte {
+func (ctx *Ctx) H(pk_seed []byte, adrs *address.Address, m2 [2][]byte) []byte {
 	hash := sha3.NewShake256()
 
 	data := make([]byte, 0)
@@ -109,7 +110,7 @@ func (ctx *Ctx) H(pk_seed []byte, adrs address.Address, m2 [2][]byte) []byte {
 	return result
 }
 
-func (ctx *Ctx) Tl(pk_seed []byte, adrs address.Address, ml [][]byte) []byte {
+func (ctx *Ctx) Tl(pk_seed []byte, adrs *address.Address, ml [][]byte) []byte {
 	hash := sha3.NewShake256()
 
 	data := make([]byte, 0)
@@ -117,9 +118,7 @@ func (ctx *Ctx) Tl(pk_seed []byte, adrs address.Address, ml [][]byte) []byte {
 
 	data = append(data, pk_seed...)
 	data = append(data, adrs[:]...)
-	for _, m := range ml {
-		data = append(data, m...)
-	}
+	data = append(data, bytes.Join(ml, nil)...)
 
 	hash.Write(data)
 	io.ReadFull(hash, result)
