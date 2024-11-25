@@ -4,15 +4,20 @@ Copyright © 2024 Po-Yeh Chen <pchen1@wpi.edu>
 package cmd
 
 import (
+	"fmt"
 	"os"
 
+	"github.com/smb374/slh-dsa-go/ctx"
+	"github.com/smb374/slh-dsa-go/params"
 	"github.com/spf13/cobra"
 )
+
+var Variant string = "SHAKE-128f"
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "slh-dsa-go",
-	Short: "A brief description of your application",
+	Short: "FIPS 205 SLH-DSA implementation in Go",
 	Long: `A longer description that spans multiple lines and likely contains
 examples and usage of using your application. For example:
 
@@ -42,5 +47,25 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.Flags().StringVarP(&Variant, "variant", "V", "SHAKE-128f", "Variant to use.")
+}
+
+func Variant2Ctx(variant string) (ctx ctx.Ctx, err error) {
+	switch variant {
+	case "SHAKE-128f":
+		ctx = params.SLH_DSA_128_FAST()
+	case "SHAKE-128s":
+		ctx = params.SLH_DSA_128_SMALL()
+	case "SHAKE-192f":
+		ctx = params.SLH_DSA_192_FAST()
+	case "SHAKE-192s":
+		ctx = params.SLH_DSA_192_SMALL()
+	case "SHAKE-256f":
+		ctx = params.SLH_DSA_256_FAST()
+	case "SHAKE-256s":
+		ctx = params.SLH_DSA_256_SMALL()
+	default:
+		err = fmt.Errorf("Invalid variant [%s]", variant)
+	}
+	return
 }
